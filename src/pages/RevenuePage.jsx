@@ -1,20 +1,33 @@
+import { useEffect } from 'react';
 import BarChart from '../components/common/BarChart';
 import LineChart from '../components/common/LineChart';
 import MotionPage from '../components/common/MotionPage';
 import SectionCard from '../components/common/SectionCard';
 import StatCard from '../components/common/StatCard';
-import { useAppSelector } from '../hooks/useAppState';
+import { useAppDispatch, useAppSelector } from '../hooks/useAppState';
+import { fetchTotalRevenue, fetchMonthlyRevenue, fetchYearlyRevenue } from '../features/revenue/revenueSlice';
 
 const RevenuePage = () => {
-  const { summary } = useAppSelector((state) => state.revenue);
+  const dispatch = useAppDispatch();
+  const { summary, loading, error } = useAppSelector((state) => state.revenue);
+
+  useEffect(() => {
+    dispatch(fetchTotalRevenue());
+    dispatch(fetchMonthlyRevenue());
+    dispatch(fetchYearlyRevenue());
+  }, [dispatch]);
 
   return (
     <MotionPage className="space-y-6">
-      <section className="grid gap-4 md:grid-cols-3">
-        <StatCard label="Total Revenue" value={summary.total} delta="All-time processed value" />
-        <StatCard label="Monthly Revenue" value={summary.monthly} delta="Current month accrual" />
-        <StatCard label="Yearly Revenue" value={summary.yearly} delta="Annual recurring total" />
-      </section>
+      {loading && <div className="text-center text-muted">Loading revenue data...</div>}
+      {error && <div className="text-center text-red-500">{error}</div>}
+      {!loading && (
+        <section className="grid gap-4 md:grid-cols-3">
+          <StatCard label="Total Revenue" value={summary.total} delta="All-time processed value" />
+          <StatCard label="Monthly Revenue" value={summary.monthly} delta="Current month accrual" />
+          <StatCard label="Yearly Revenue" value={summary.yearly} delta="Annual recurring total" />
+        </section>
+      )}
 
       <section className="grid gap-6 xl:grid-cols-[1.3fr_0.7fr]">
         <SectionCard title="Monthly Revenue" subtitle="Monthly billing trend across platform subscriptions.">

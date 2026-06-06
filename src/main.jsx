@@ -4,12 +4,14 @@ import { Provider } from 'react-redux';
 import { BrowserRouter } from 'react-router-dom';
 import AppRouter from './routes/AppRouter';
 import { store } from './store';
+import RealtimeBootstrap from './app/RealtimeBootstrap';
 import './index.css';
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <Provider store={store}>
       <BrowserRouter>
+        <RealtimeBootstrap />
         <AppRouter />
       </BrowserRouter>
     </Provider>

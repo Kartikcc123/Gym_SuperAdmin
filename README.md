@@ -216,19 +216,31 @@ The project includes mock Redux state for:
 npm install
 ```
 
-### 2. Start development server
+### 2. Configure environment
+
+```bash
+cp .env.example .env
+```
+
+Vite environment value:
+
+```text
+VITE_API_BASE_URL=https://gym-backend-o1k5.onrender.com
+```
+
+### 3. Start development server
 
 ```bash
 npm run dev
 ```
 
-### 3. Build for production
+### 4. Build for production
 
 ```bash
 npm run build
 ```
 
-### 4. Preview production build
+### 5. Preview production build
 
 ```bash
 npm run preview
@@ -254,6 +266,13 @@ This login is fully mocked in Redux and does not connect to any server.
 
 This project is structured so backend integration can be added later with minimal UI refactoring.
 
+Current live backend integration status as verified on **June 3, 2026**:
+
+- `GET /health` responds successfully from `https://gym-backend-o1k5.onrender.com/health`
+- The frontend now polls that endpoint in real time
+- Dashboard and login surfaces display live backend status
+- Business pages still use fallback data because common public resource routes such as `/api/gyms`, `/api/users`, `/api/subscriptions`, and `/api/revenue` returned `404 Not Found` during integration
+
 Recommended future integration points:
 
 - Replace mock data with API service layer
@@ -278,4 +297,3 @@ Recommended future integration points:
 ## License
 
 This project is for internal/product development use unless you define your own license.
-

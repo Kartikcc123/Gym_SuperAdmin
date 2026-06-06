@@ -3,18 +3,22 @@ import { LockKeyhole, Mail } from 'lucide-react';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import MotionPage from '../components/common/MotionPage';
-import { login } from '../features/auth/authSlice';
-import { useAppDispatch } from '../hooks/useAppState';
+import { loginSuperAdmin } from '../features/auth/authSlice';
+import { useAppDispatch, useAppSelector } from '../hooks/useAppState';
 
 const LoginPage = () => {
-  const [form, setForm] = useState({ email: 'admin@gymsuper.io', password: '••••••••' });
+  const [form, setForm] = useState({ email: 'super@admin.com', password: 'password123' });
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+  const { loading, error } = useAppSelector((state) => state.auth);
+  const backend = useAppSelector((state) => state.system.backend);
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    dispatch(login({ email: form.email }));
-    navigate('/');
+    const resultAction = await dispatch(loginSuperAdmin({ email: form.email, password: form.password }));
+    if (loginSuperAdmin.fulfilled.match(resultAction)) {
+      navigate('/');
+    }
   };
 
   return (
@@ -42,9 +46,20 @@ const LoginPage = () => {
 
           <div className="flex items-center p-6 sm:p-10">
             <form onSubmit={handleSubmit} className="w-full">
-              <p className="text-sm uppercase tracking-[0.28em] text-neon">Mock Authentication</p>
+              <p className="text-sm uppercase tracking-[0.28em] text-neon">Authentication</p>
               <h2 className="mt-4 font-display text-3xl font-semibold">Super Admin Login</h2>
-              <p className="mt-3 text-sm text-muted">Frontend-only access flow. This signs in against local mock state only.</p>
+              <p className="mt-3 text-sm text-muted">Sign in to the Gym SaaS backend to manage your tenants and plans.</p>
+              <div className="mt-5 rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm">
+                <span className="text-muted">Backend connection:</span>{' '}
+                <span className={backend.status === 'active' ? 'text-neon' : 'text-yellow-300'}>
+                  {backend.status === 'active' ? `Live at ${backend.timestamp || 'connected'}` : backend.status}
+                </span>
+              </div>
+              {error && (
+                <div className="mt-4 rounded-2xl border border-red-500/50 bg-red-500/10 px-4 py-3 text-sm text-red-200">
+                  {error}
+                </div>
+              )}
 
               <div className="mt-10 space-y-4">
                 <label className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/5 px-4 py-4">
@@ -70,8 +85,8 @@ const LoginPage = () => {
               </div>
 
               <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-                <button type="submit" className="rounded-2xl bg-neon px-5 py-3 font-semibold text-black transition hover:brightness-110">
-                  Login
+                <button type="submit" disabled={loading} className="rounded-2xl bg-neon px-5 py-3 font-semibold text-black transition hover:brightness-110 disabled:opacity-50">
+                  {loading ? 'Authenticating...' : 'Login'}
                 </button>
                 <button type="button" className="rounded-2xl border border-white/10 bg-white/5 px-5 py-3 font-medium text-white/80 transition hover:bg-white/10">
                   Forgot Password

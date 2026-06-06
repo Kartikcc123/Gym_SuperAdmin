@@ -1,11 +1,19 @@
+import { useEffect } from 'react';
 import MotionPage from '../components/common/MotionPage';
 import SectionCard from '../components/common/SectionCard';
 import StatusBadge from '../components/common/StatusBadge';
 import StatCard from '../components/common/StatCard';
-import { useAppSelector } from '../hooks/useAppState';
+import { useAppDispatch, useAppSelector } from '../hooks/useAppState';
+import { fetchPlans, fetchSubscriptions } from '../features/subscriptions/subscriptionSlice';
 
 const SubscriptionsPage = () => {
-  const { plans, summary } = useAppSelector((state) => state.subscriptions);
+  const dispatch = useAppDispatch();
+  const { plans, summary, loading, error } = useAppSelector((state) => state.subscriptions);
+
+  useEffect(() => {
+    dispatch(fetchPlans());
+    dispatch(fetchSubscriptions());
+  }, [dispatch]);
 
   return (
     <MotionPage className="space-y-6">
@@ -40,9 +48,12 @@ const SubscriptionsPage = () => {
       </section>
 
       <SectionCard title="Plan Activity" subtitle="Recent plan state changes and renewals.">
-        <div className="space-y-4">
-          {summary.records.map((item) => (
-            <div key={item.gym} className="grid gap-4 rounded-2xl border border-white/10 bg-white/[0.03] p-4 md:grid-cols-[1.2fr_0.8fr_0.8fr_0.8fr_auto] md:items-center">
+        {loading && <div className="py-4 text-muted">Loading subscriptions...</div>}
+        {error && <div className="py-4 text-red-500">{error}</div>}
+        {!loading && (
+          <div className="space-y-4">
+            {summary.records.map((item) => (
+              <div key={item._id} className="grid gap-4 rounded-2xl border border-white/10 bg-white/[0.03] p-4 md:grid-cols-[1.2fr_0.8fr_0.8fr_0.8fr_auto] md:items-center">
               <div>
                 <p className="font-medium text-white">{item.gym}</p>
                 <p className="mt-1 text-sm text-muted">{item.plan} plan</p>
@@ -57,6 +68,7 @@ const SubscriptionsPage = () => {
             </div>
           ))}
         </div>
+        )}
       </SectionCard>
     </MotionPage>
   );

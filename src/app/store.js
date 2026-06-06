@@ -5,6 +5,7 @@ import gymReducer from '../features/gyms/gymSlice';
 import subscriptionReducer from '../features/subscriptions/subscriptionSlice';
 import revenueReducer from '../features/revenue/revenueSlice';
 import notificationReducer from '../features/notifications/notificationSlice';
+import systemReducer from '../features/system/systemSlice';
 
 export const store = configureStore({
   reducer: {
@@ -14,5 +15,6 @@ export const store = configureStore({
     subscriptions: subscriptionReducer,
     revenue: revenueReducer,
     notifications: notificationReducer,
+    system: systemReducer,
   },
 });
